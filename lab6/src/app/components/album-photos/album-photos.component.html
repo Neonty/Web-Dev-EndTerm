@@ -1,0 +1,44 @@
+<div class="photos-page">
+
+  <button class="btn-back" (click)="goBack()">← Return to File</button>
+
+  <div class="photos-header">
+    <div>
+      <div class="section-tag">VISUAL DOSSIER</div>
+      <h1>File #{{ albumId }} — Photo Evidence</h1>
+    </div>
+    <span *ngIf="!loading" class="photos-count">
+      {{ allPhotos.length }} RECORDS · PAGE {{ currentPage }} / {{ totalPages }}
+    </span>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Retrieving visual evidence...</p>
+  </div>
+
+  <div *ngIf="error && !loading" class="error-msg">⚠ {{ error }}</div>
+
+  <div *ngIf="!loading && !error" class="photos-grid">
+    <div *ngFor="let photo of visiblePhotos" class="photo-card">
+      <div class="photo-frame">
+        <img [src]="photo.thumbnailUrl" [alt]="photo.title" loading="lazy" />
+        <div class="photo-overlay"></div>
+      </div>
+      <p class="photo-title">{{ photo.title }}</p>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && !error && totalPages > 1" class="pagination">
+    <button class="page-btn" (click)="goToPage(1)" [disabled]="currentPage === 1">«</button>
+    <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">‹</button>
+    <button
+      *ngFor="let p of pages"
+      class="page-btn"
+      [class.active]="p === currentPage"
+      (click)="goToPage(p)">{{ p }}</button>
+    <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">›</button>
+    <button class="page-btn" (click)="goToPage(totalPages)" [disabled]="currentPage === totalPages">»</button>
+  </div>
+
+</div>

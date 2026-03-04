@@ -1,0 +1,41 @@
+<div class="app-shell">
+
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="hero-emblem">
+        <div class="emblem-wings"></div>
+        <div class="hero-titles">
+          <h1>ANIME<span class="accent">VAULT</span></h1>
+          <p class="hero-sub">Survey Corps Archive · 100 Classified Series</p>
+        </div>
+      </div>
+      <div class="hero-regiment">
+        <span class="regiment-name">Survey Corps</span>
+        <span class="regiment-motto">"Dedicate your heart."</span>
+      </div>
+    </div>
+  </header>
+
+  <nav class="navbar">
+    <a routerLink="/home"   routerLinkActive="nav-active">
+      <span class="nav-rank">I.</span> Home
+    </a>
+    <a routerLink="/about"  routerLinkActive="nav-active">
+      <span class="nav-rank">II.</span> About
+    </a>
+    <a routerLink="/albums" routerLinkActive="nav-active">
+      <span class="nav-rank">III.</span> Albums
+    </a>
+  </nav>
+
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+
+  <footer class="app-footer">
+    <div class="footer-divider"></div>
+    <span class="footer-text">Animevault · Survey Corps Archive · 2025</span>
+    <div class="footer-divider"></div>
+  </footer>
+
+</div>
