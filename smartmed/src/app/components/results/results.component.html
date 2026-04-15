@@ -1,0 +1,75 @@
+<div class="page-wrap">
+
+  @if (showToast) {
+    <div class="toast">{{ toastMessage }}</div>
+  }
+
+  @if (isLoading) {
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Анализируем симптомы...</p>
+    </div>
+  }
+
+  @if (!isLoading && symptoms.length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">🔍</div>
+      <p class="empty-title">Нет результатов</p>
+      <p class="empty-sub">Сначала введите симптомы</p>
+      <button class="btn" routerLink="/symptoms">Ввести симптомы</button>
+    </div>
+  }
+
+  @if (!isLoading && symptoms.length > 0) {
+    <div class="results-header">
+      <div>
+        <h1>Результаты анализа</h1>
+        <p class="sub">На основе: {{ symptoms.join(', ') }}</p>
+      </div>
+      <div class="diagnosis-pill">Простуда / ОРВИ</div>
+    </div>
+
+    <div class="section-title">💊 Рекомендуемые лекарства</div>
+    <div class="medicine-grid">
+      @for (med of medicines; track med.id) {
+        <div class="med-card">
+          <div class="med-icon">💊</div>
+          <div class="med-name">{{ med.name }}</div>
+          <div class="med-desc">{{ med.description }}</div>
+          <div class="price">{{ med.price }} ₸</div>
+
+          @if (med.inStock) {
+            <span class="badge badge-green">В наличии</span>
+          } @else {
+            <span class="badge badge-gray">Нет в наличии</span>
+          }
+
+          <button
+            class="btn"
+            [disabled]="!med.inStock"
+            (click)="onBuy(med)"
+          >
+            Купить
+          </button>
+        </div>
+      }
+    </div>
+
+    <hr class="divider" />
+
+    <div class="section-title">👨‍⚕️ Рекомендуемые врачи</div>
+    <div class="doctor-grid">
+      @for (doc of doctors; track doc.id) {
+        <div class="doc-card">
+          <div class="doc-avatar">{{ getInitials(doc.name) }}</div>
+          <div class="doc-name">{{ doc.name }}</div>
+          <div class="doc-spec">{{ doc.specialization }}</div>
+          <div class="doc-exp">Опыт: {{ doc.experience }} лет</div>
+          <div class="stars">{{ getStars(doc.rating) }}</div>
+          <button class="btn btn-outline" (click)="onBook(doc)">Записаться</button>
+        </div>
+      }
+    </div>
+  }
+
+</div>

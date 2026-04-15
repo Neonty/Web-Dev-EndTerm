@@ -1,0 +1,60 @@
+<div class="page-wrap">
+  <h1>Опишите симптомы</h1>
+  <p class="sub">Выберите симптомы или введите самостоятельно — мы подберём лекарства и врача</p>
+
+  <div class="card">
+
+    @if (showError) {
+      <div class="alert alert-error">Выберите хотя бы один симптом или опишите проблему</div>
+    }
+
+    <div class="form-group">
+      <label>Выберите симптомы</label>
+      <div class="symptom-tags">
+        @for (symptom of allSymptoms; track symptom) {
+          <div
+            class="tag"
+            [class.selected]="isSelected(symptom)"
+            (click)="toggleSymptom(symptom)"
+          >
+            {{ symptom }}
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="symptom-text">Дополнительное описание</label>
+      <textarea
+        id="symptom-text"
+        name="symptomText"
+        [(ngModel)]="additionalText"
+        placeholder="Опишите подробнее как вы себя чувствуете..."
+      ></textarea>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="symptom-date">Дата начала</label>
+        <input
+          type="date"
+          id="symptom-date"
+          name="startDate"
+          [(ngModel)]="startDate"
+        />
+      </div>
+      <div class="form-group">
+        <label for="severity">Тяжесть состояния</label>
+        <select id="severity" name="severity" [(ngModel)]="severity">
+          <option>Лёгкая</option>
+          <option>Умеренная</option>
+          <option>Сильная</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn" (click)="onAnalyze()">
+      Анализировать симптомы
+    </button>
+  </div>
+</div>
