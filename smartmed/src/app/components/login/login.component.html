@@ -1,0 +1,58 @@
+<div class="page-wrap">
+  <div class="login-logo">
+    <div class="big-logo">SmartMed</div>
+    <p class="tagline">Ваш онлайн-помощник в здоровье</p>
+  </div>
+
+  <div class="card">
+    <h2>Вход в систему</h2>
+
+    @if (errorMessage) {
+      <div class="alert alert-error">{{ errorMessage }}</div>
+    }
+
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        [(ngModel)]="email"
+        placeholder="example@email.com"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="password">Пароль</label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        [(ngModel)]="password"
+        placeholder="••••••••"
+      />
+    </div>
+
+    <div class="checkbox-wrap">
+      <input
+        type="checkbox"
+        id="remember"
+        name="remember"
+        [(ngModel)]="rememberMe"
+      />
+      <label for="remember">Запомнить меня</label>
+    </div>
+
+    <button class="btn" (click)="onLogin()" [disabled]="isLoading">
+      @if (isLoading) {
+        Загрузка...
+      } @else {
+        Войти в аккаунт
+      }
+    </button>
+
+    <button class="btn btn-outline" routerLink="/symptoms">
+      Создать аккаунт
+    </button>
+  </div>
+</div>

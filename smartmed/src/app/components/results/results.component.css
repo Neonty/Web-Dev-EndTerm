@@ -1,0 +1,276 @@
+.page-wrap {
+  max-width: 800px;
+  margin: 2.5rem auto;
+  padding: 0 1.5rem;
+  position: relative;
+}
+
+h1 {
+  font-family: Georgia, serif;
+  font-size: 28px;
+  color: #1a2e25;
+  margin-bottom: 4px;
+}
+
+.sub {
+  color: #6b7f75;
+  font-size: 14px;
+}
+
+.results-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  gap: 16px;
+}
+
+.diagnosis-pill {
+  background: #E1F5EE;
+  color: #085041;
+  padding: 8px 18px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.section-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a2e25;
+  margin: 24px 0 16px;
+}
+
+.medicine-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.doctor-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 560px) {
+  .medicine-grid,
+  .doctor-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.med-card,
+.doc-card {
+  background: #fff;
+  border: 1px solid #d0e8df;
+  border-radius: 14px;
+  padding: 1.25rem;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.med-card:hover,
+.doc-card:hover {
+  border-color: #1D9E75;
+  box-shadow: 0 4px 16px rgba(29, 158, 117, 0.12);
+}
+
+.med-icon {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.med-name,
+.doc-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a2e25;
+  margin-bottom: 4px;
+}
+
+.med-desc {
+  font-size: 13px;
+  color: #6b7f75;
+  margin-bottom: 12px;
+  flex: 1;
+}
+
+.price {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1D9E75;
+  margin-bottom: 10px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.badge-green {
+  background: #E1F5EE;
+  color: #085041;
+}
+
+.badge-gray {
+  background: #f1efe8;
+  color: #5f5e5a;
+}
+
+.doc-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #E1F5EE;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  color: #085041;
+  margin-bottom: 12px;
+}
+
+.doc-spec {
+  font-size: 13px;
+  color: #6b7f75;
+  margin-bottom: 2px;
+}
+
+.doc-exp {
+  font-size: 13px;
+  color: #6b7f75;
+  margin-bottom: 8px;
+}
+
+.stars {
+  color: #EF9F27;
+  font-size: 16px;
+  margin-bottom: 12px;
+  letter-spacing: 2px;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 11px;
+  background: #1D9E75;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: auto;
+  font-family: inherit;
+}
+
+.btn:hover {
+  background: #0F6E56;
+  transform: translateY(-1px);
+}
+
+.btn:disabled {
+  background: #9FE1CB;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-outline {
+  background: transparent;
+  color: #1D9E75;
+  border: 1.5px solid #1D9E75;
+}
+
+.btn-outline:hover {
+  background: #E1F5EE;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid #d0e8df;
+  margin: 32px 0;
+}
+
+/* Loading */
+.loading {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: #6b7f75;
+}
+
+.spinner {
+  width: 44px;
+  height: 44px;
+  border: 3px solid #E1F5EE;
+  border-top-color: #1D9E75;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 5rem 1rem;
+}
+
+.empty-icon {
+  font-size: 56px;
+  margin-bottom: 16px;
+}
+
+.empty-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a2e25;
+  margin-bottom: 8px;
+}
+
+.empty-sub {
+  font-size: 15px;
+  color: #6b7f75;
+  margin-bottom: 24px;
+}
+
+.empty-state .btn {
+  width: auto;
+  padding: 12px 28px;
+  display: inline-flex;
+  margin: 0 auto;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  background: #085041;
+  color: #fff;
+  padding: 14px 22px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 999;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
