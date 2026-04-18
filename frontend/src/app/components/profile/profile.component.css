@@ -1,0 +1,76 @@
+.page-wrap {
+  max-width: 620px;
+  margin: 34px auto;
+  padding: 0 20px;
+}
+
+.card {
+  padding: 22px;
+}
+
+.avatar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 1rem;
+}
+
+.avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(225, 240, 234, 0.95);
+  box-shadow: var(--shadow-sm);
+}
+
+.avatar-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e1f5ee;
+  font-size: 34px;
+}
+
+.form-group {
+  margin-bottom: 14px;
+}
+
+label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b7f75;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+input,
+textarea {
+  width: 100%;
+  font-family: inherit;
+}
+
+.btn {
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.alert {
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.alert-error {
+  background: #fcebeb;
+  color: #a32d2d;
+}
+
+.alert-success {
+  background: #e4f6ee;
+  color: #0f6e56;
+}

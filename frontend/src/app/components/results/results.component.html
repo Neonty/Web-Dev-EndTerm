@@ -1,0 +1,55 @@
+<div class="page-wrap">
+  <div class="results-header">
+    <div>
+      <h1>{{ 'results.title' | translate }}</h1>
+      <p class="sub">{{ 'results.basedOn' | translate }}: {{ selectedSymptoms.length ? selectedSymptoms.join(', ') : ('results.selectedSymptoms' | translate) }}</p>
+    </div>
+    <div class="diagnosis-pill">{{ diagnosis }}</div>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <div>{{ 'results.loading' | translate }}</div>
+  </div>
+
+  <div *ngIf="!loading && error" class="empty-state">
+    <div class="empty-icon">⚠️</div>
+    <div class="empty-title">{{ 'results.failed' | translate }}</div>
+    <div class="empty-sub">{{ error }}</div>
+    <button class="btn" (click)="goBackToSymptoms()">{{ 'results.back' | translate }}</button>
+  </div>
+
+  <ng-container *ngIf="!loading && !error">
+    <h3 class="section-title">💊 {{ 'results.medicines' | translate }}</h3>
+    <div *ngIf="medicines.length === 0" class="empty-sub">{{ 'results.noMedicines' | translate }}</div>
+    <div class="medicine-grid">
+      <div *ngFor="let medicine of medicines" class="med-card">
+        <div class="med-icon">💊</div>
+        <div class="med-name">{{ medicine.name }}</div>
+        <div class="med-desc">{{ medicine.description }}</div>
+        <div class="price">{{ medicine.price }} ₸</div>
+        <span class="badge" [class.badge-green]="medicine.inStock !== false" [class.badge-gray]="medicine.inStock === false">
+          {{ medicine.inStock === false ? ('results.outOfStock' | translate) : ('results.inStock' | translate) }}
+        </span>
+        <button class="btn" [disabled]="medicine.inStock === false" (click)="buyMedicine(medicine)">{{ 'results.buy' | translate }}</button>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <h3 class="section-title">🧑‍⚕️ {{ 'results.doctors' | translate }}</h3>
+    <div *ngIf="doctors.length === 0" class="empty-sub">{{ 'results.noDoctors' | translate }}</div>
+    <div class="doctor-grid">
+      <div *ngFor="let doctor of doctors" class="doc-card">
+        <div class="doc-avatar">{{ getDoctorInitials(doctor.name) }}</div>
+        <div class="doc-name">{{ doctor.name }}</div>
+        <div class="doc-spec">{{ doctor.specialization }}</div>
+        <div class="doc-exp">{{ 'results.experience' | translate }}: {{ doctor.experience_years }} {{ 'results.years' | translate }}</div>
+        <div class="stars">{{ getDoctorStars(doctor.experience_years) }}</div>
+        <button class="btn btn-outline" (click)="bookDoctor(doctor)">{{ 'results.book' | translate }}</button>
+      </div>
+    </div>
+  </ng-container>
+
+  <div *ngIf="toastMessage" class="toast">{{ toastMessage }}</div>
+</div>

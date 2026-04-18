@@ -1,0 +1,49 @@
+<div class="page-wrap">
+  <div class="card">
+    <h2>{{ 'profile.title' | translate }}</h2>
+
+    <div *ngIf="isLoading">{{ 'common.loading' | translate }}</div>
+    <div class="alert alert-error" *ngIf="error">{{ error }}</div>
+    <div class="alert alert-success" *ngIf="message">{{ message }}</div>
+
+    <div class="avatar-wrap">
+      <img *ngIf="profile.avatar" [src]="profile.avatar" alt="avatar" class="avatar" />
+      <div *ngIf="!profile.avatar" class="avatar avatar-empty">👤</div>
+      <input type="file" accept="image/*" (change)="onFileSelected($event)" />
+    </div>
+
+    <div class="form-group">
+      <label>{{ 'register.username' | translate }}</label>
+      <input type="text" [(ngModel)]="profile.username" disabled />
+    </div>
+
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" [(ngModel)]="profile.email" />
+    </div>
+
+    <div class="form-group">
+      <label>{{ 'register.firstName' | translate }}</label>
+      <input type="text" [(ngModel)]="profile.first_name" />
+    </div>
+
+    <div class="form-group">
+      <label>{{ 'register.lastName' | translate }}</label>
+      <input type="text" [(ngModel)]="profile.last_name" />
+    </div>
+
+    <div class="form-group">
+      <label>{{ 'profile.phone' | translate }}</label>
+      <input type="text" [(ngModel)]="profile.phone" />
+    </div>
+
+    <div class="form-group">
+      <label>{{ 'profile.about' | translate }}</label>
+      <textarea rows="4" [(ngModel)]="profile.about"></textarea>
+    </div>
+
+    <button class="btn" (click)="saveProfile()" [disabled]="isSaving">
+      {{ isSaving ? ('common.loading' | translate) : ('profile.save' | translate) }}
+    </button>
+  </div>
+</div>

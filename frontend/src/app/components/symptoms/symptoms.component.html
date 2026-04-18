@@ -1,0 +1,79 @@
+<div class="page-wrap">
+  <h1>{{ 'symptoms.title' | translate }}</h1>
+  <p class="sub">{{ 'symptoms.subtitle' | translate }}</p>
+
+  <div class="card">
+
+    @if (showError) {
+      <div class="alert alert-error">{{ 'symptoms.error' | translate }}</div>
+    }
+
+    <div class="form-group">
+      <label>{{ 'symptoms.select' | translate }}</label>
+      <div class="symptom-tags">
+        @for (symptom of allSymptoms; track symptom.code) {
+          <div
+            class="tag"
+            [class.selected]="isSelected(symptom.code)"
+            (click)="toggleSymptom(symptom.code)"
+          >
+            {{ symptom.label }}
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="symptom-text">{{ 'symptoms.additional' | translate }}</label>
+      <textarea
+        id="symptom-text"
+        name="symptomText"
+        [(ngModel)]="additionalText"
+        [placeholder]="'symptoms.additionalPlaceholder' | translate"
+      ></textarea>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="symptom-date">{{ 'symptoms.startDate' | translate }}</label>
+        <input
+          type="date"
+          id="symptom-date"
+          name="startDate"
+          [(ngModel)]="startDate"
+        />
+      </div>
+      <div class="form-group">
+        <label for="severity">{{ 'symptoms.severity' | translate }}</label>
+        <select id="severity" name="severity" [(ngModel)]="severity">
+          <option>Лёгкая</option>
+          <option>Умеренная</option>
+          <option>Сильная</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn" (click)="onAnalyze()">
+      {{ 'symptoms.submit' | translate }}
+    </button>
+
+    <button class="btn btn-outline" style="margin-top: 10px; width: 100%;" (click)="getAiAdvice()" [disabled]="aiLoading">
+      @if (aiLoading) {
+        {{ 'common.loading' | translate }}
+      } @else {
+        ИИ кеңесі
+      }
+    </button>
+
+    @if (aiError) {
+      <div class="alert alert-error" style="margin-top: 12px;">{{ aiError }}</div>
+    }
+
+    @if (aiAdvice) {
+      <div class="card" style="margin-top: 14px; padding: 16px;">
+        <div style="font-weight: 800; margin-bottom: 8px;">ИИ кеңесі</div>
+        <div style="white-space: pre-wrap; color: var(--text); line-height: 1.5;">{{ aiAdvice }}</div>
+      </div>
+    }
+  </div>
+</div>

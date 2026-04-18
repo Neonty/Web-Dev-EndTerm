@@ -1,0 +1,64 @@
+<div class="page-wrap">
+  <div class="login-logo">
+    <div class="big-logo">SmartMed</div>
+    <p class="tagline">{{ 'register.tagline' | translate }}</p>
+  </div>
+
+  <div class="card">
+    <h2>{{ 'register.title' | translate }}</h2>
+
+    @if (errorMessage) {
+      <div class="alert alert-error">{{ errorMessage }}</div>
+    }
+
+    @if (successMessage) {
+      <div class="alert alert-success">{{ successMessage }}</div>
+    }
+
+    <div class="form-group">
+      <label for="username">{{ 'register.username' | translate }} *</label>
+      <input type="text" id="username" name="username" [(ngModel)]="username" [placeholder]="'register.username' | translate" />
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" [(ngModel)]="email" placeholder="example@email.com" />
+    </div>
+
+    <div class="form-group">
+      <label for="firstName">{{ 'register.firstName' | translate }}</label>
+      <input type="text" id="firstName" name="firstName" [(ngModel)]="firstName" [placeholder]="'register.firstName' | translate" />
+    </div>
+
+    <div class="form-group">
+      <label for="lastName">{{ 'register.lastName' | translate }}</label>
+      <input type="text" id="lastName" name="lastName" [(ngModel)]="lastName" [placeholder]="'register.lastName' | translate" />
+    </div>
+
+    <div class="form-group">
+      <label for="password">{{ 'register.password' | translate }} *</label>
+      <input type="password" id="password" name="password" [(ngModel)]="password" [placeholder]="'register.passwordHint' | translate" />
+    </div>
+
+    <div class="form-group">
+      <label for="confirmPassword">{{ 'register.confirmPassword' | translate }} *</label>
+      <input
+        type="password"
+        id="confirmPassword"
+        name="confirmPassword"
+        [(ngModel)]="confirmPassword"
+        [placeholder]="'register.confirmPassword' | translate"
+      />
+    </div>
+
+    <button class="btn" (click)="onRegister()" [disabled]="isLoading">
+      @if (isLoading) {
+        {{ 'common.loading' | translate }}
+      } @else {
+        {{ 'register.submit' | translate }}
+      }
+    </button>
+
+    <button class="btn btn-outline" routerLink="/login">{{ 'register.backToLogin' | translate }}</button>
+  </div>
+</div>

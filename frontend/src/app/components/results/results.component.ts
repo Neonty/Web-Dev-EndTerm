@@ -1,0 +1,138 @@
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router, ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { TranslatePipe } from '@ngx-translate/core';
+import { ApiService } from '../../../services/api.service';
+import { Medicine, Doctor } from '../../../models/medicine.model';
+import { buildAnalyzeKeywords, SymptomCode } from '../../../services/symptom-keywords';
+
+@Component({
+  selector: 'app-results',
+  standalone: true,
+  imports: [CommonModule, TranslatePipe],
+  templateUrl: './results.component.html',
+  styleUrls: ['./results.component.css']
+})
+export class ResultsComponent implements OnInit, OnDestroy {
+  medicines: Medicine[] = [];
+  doctors: Doctor[] = [];
+  loading = false;
+  error = '';
+  selectedSymptoms: string[] = [];
+  diagnosis = '';
+  toastMessage = '';
+
+  private symptomCodes: SymptomCode[] = [];
+  private additionalText = '';
+  private severity = '';
+  private startDate = '';
+  private paramsSub?: Subscription;
+
+  constructor(
+    private apiService: ApiService,
+    private router: Router,
+    private route: ActivatedRoute   // ← жаңа dependency
+  ) {}
+
+  ngOnInit(): void {
+    // queryParams өзгерген сайын автоматты re-fetch болады
+    this.paramsSub = this.route.queryParams.subscribe(params => {
+      const codesRaw = params['codes'] ?? '';
+      const codes = codesRaw
+        ? (codesRaw as string).split(',').map(s => s.trim()).filter(Boolean)
+        : [];
+
+      if (codes.length === 0) {
+        // Симптомсыз results бетіне кіруге болмайды
+        this.router.navigate(['/symptoms']);
+        return;
+      }
+
+      this.symptomCodes  = codes as SymptomCode[];
+      this.additionalText = params['text']      ?? '';
+      this.severity       = params['severity']  ?? '';
+      this.startDate      = params['startDate'] ?? '';
+
+      const keywords = buildAnalyzeKeywords(this.symptomCodes, this.additionalText);
+      this.selectedSymptoms = keywords.slice(0, 6);
+      this.diagnosis = this.inferDiagnosis(keywords);
+      this.analyze(keywords, this.symptomCodes);
+    });
+  }
+
+  ngOnDestroy(): void {
+    // Memory leak болдырмау үшін unsubscribe
+    this.paramsSub?.unsubscribe();
+  }
+
+  private analyze(symptoms: string[], codes: SymptomCode[]): void {
+    this.loading = true;
+    this.error = '';
+    this.medicines = [];
+    this.doctors = [];
+
+    this.apiService
+      .analyzeSymptoms({
+        symptoms,
+        codes,
+        text: this.additionalText,
+        severity: this.severity,
+        startDate: this.startDate,
+      })
+      .subscribe({
+        next: (data: { medicines: Medicine[]; doctors: Doctor[] }) => {
+          this.medicines = data.medicines;
+          this.doctors   = data.doctors;
+          this.loading   = false;
+        },
+        error: (err) => {
+          console.error('Analyze error:', err);
+          this.error   = 'Симптомдарды талдауда қате шықты';
+          this.loading = false;
+        }
+      });
+  }
+
+  goBackToSymptoms(): void {
+    this.router.navigate(['/symptoms']);
+  }
+
+  buyMedicine(medicine: Medicine): void {
+    this.showToast(`${medicine.name ?? 'Дәрі'} корзинаға қосылды`);
+  }
+
+  bookDoctor(doctor: Doctor): void {
+    this.showToast(`${doctor.name ?? 'Дәрігер'} дәрігеріне жазылу басталды`);
+  }
+
+  getDoctorInitials(name: string): string {
+    return (name || '')
+      .split(' ')
+      .filter(Boolean)
+      .slice(0, 2)
+      .map(part => part[0].toUpperCase())
+      .join('');
+  }
+
+  getDoctorStars(experienceYears: number): string {
+    const stars = Math.max(1, Math.min(5, Math.round((experienceYears || 1) / 2)));
+    return '★'.repeat(stars) + '☆'.repeat(5 - stars);
+  }
+
+  private inferDiagnosis(symptoms: string[]): string {
+    const lower = symptoms.map(s => s.toLowerCase());
+    if (lower.some(s => s.includes('аллерг') || s.includes('allerg'))) {
+      return 'Аллергия';
+    }
+    if (lower.some(s => s.includes('живот') || s.includes('іш'))) {
+      return 'Асқазан-ішек бұзылысы';
+    }
+    return 'Простуда / ОРВИ';
+  }
+
+  private showToast(message: string): void {
+    this.toastMessage = message;
+    setTimeout(() => (this.toastMessage = ''), 1800);
+  }
+}
