@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -32,24 +32,23 @@ export class ResultsComponent implements OnInit, OnDestroy {
   constructor(
     private apiService: ApiService,
     private router: Router,
-    private route: ActivatedRoute   // ← жаңа dependency
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    // queryParams өзгерген сайын автоматты re-fetch болады
     this.paramsSub = this.route.queryParams.subscribe(params => {
       const codesRaw = params['codes'] ?? '';
       const codes = codesRaw
-        ? (codesRaw as string).split(',').map(s => s.trim()).filter(Boolean)
+        ? (codesRaw as string).split(',').map((s: string) => s.trim()).filter(Boolean)
         : [];
 
       if (codes.length === 0) {
-        // Симптомсыз results бетіне кіруге болмайды
         this.router.navigate(['/symptoms']);
         return;
       }
 
-      this.symptomCodes  = codes as SymptomCode[];
+      this.symptomCodes   = codes as SymptomCode[];
       this.additionalText = params['text']      ?? '';
       this.severity       = params['severity']  ?? '';
       this.startDate      = params['startDate'] ?? '';
@@ -62,7 +61,6 @@ export class ResultsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // Memory leak болдырмау үшін unsubscribe
     this.paramsSub?.unsubscribe();
   }
 
@@ -85,11 +83,13 @@ export class ResultsComponent implements OnInit, OnDestroy {
           this.medicines = data.medicines;
           this.doctors   = data.doctors;
           this.loading   = false;
+          this.cdr.markForCheck();
         },
         error: (err) => {
           console.error('Analyze error:', err);
           this.error   = 'Симптомдарды талдауда қате шықты';
           this.loading = false;
+          this.cdr.markForCheck();
         }
       });
   }
