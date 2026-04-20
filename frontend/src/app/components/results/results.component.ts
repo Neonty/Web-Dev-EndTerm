@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -11,7 +12,7 @@ import { buildAnalyzeKeywords, SymptomCode } from '../../../services/symptom-key
 @Component({
   selector: 'app-results',
   standalone: true,
-  imports: [CommonModule, TranslatePipe],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './results.component.html',
   styleUrls: ['./results.component.css']
 })
@@ -24,6 +25,13 @@ export class ResultsComponent implements OnInit, OnDestroy {
   diagnosis = '';
   toastMessage = '';
   addingToCart: Set<number> = new Set();
+
+  // Review state
+  expandedDoctor: number | null = null;
+  reviewRatings: Record<number, number> = {};
+  reviewComments: Record<number, string> = {};
+  submittingReview: number | null = null;
+  userReviews: Record<number, boolean> = {};
 
   private symptomCodes: SymptomCode[] = [];
   private additionalText = '';
@@ -73,41 +81,31 @@ export class ResultsComponent implements OnInit, OnDestroy {
     this.medicines = [];
     this.doctors = [];
 
-    this.apiService
-      .analyzeSymptoms({
-        symptoms,
-        codes,
-        text: this.additionalText,
-        severity: this.severity,
-        startDate: this.startDate,
-      })
-      .subscribe({
-        next: (data: { medicines: Medicine[]; doctors: Doctor[] }) => {
-          this.medicines = data.medicines;
-          this.doctors   = data.doctors;
-          this.loading   = false;
-          this.cdr.markForCheck();
-        },
-        error: (err) => {
-          console.error('Analyze error:', err);
-          this.error   = 'Симптомдарды талдауда қате шықты';
-          this.loading = false;
-          this.cdr.markForCheck();
-        }
-      });
+    this.apiService.analyzeSymptoms({
+      symptoms, codes,
+      text: this.additionalText,
+      severity: this.severity,
+      startDate: this.startDate,
+    }).subscribe({
+      next: (data: { medicines: Medicine[]; doctors: Doctor[] }) => {
+        this.medicines = data.medicines;
+        this.doctors   = data.doctors;
+        this.loading   = false;
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        console.error('Analyze error:', err);
+        this.error   = 'Симптомдарды талдауда қате шықты';
+        this.loading = false;
+        this.cdr.markForCheck();
+      }
+    });
   }
 
-  goBackToSymptoms(): void {
-    this.router.navigate(['/symptoms']);
-  }
-
-  goToCart(): void {
-    this.router.navigate(['/cart']);
-  }
+  // ─── CART ─────────────────────────────────────────────
 
   buyMedicine(medicine: Medicine): void {
     if (!medicine.id || this.addingToCart.has(medicine.id)) return;
-
     this.addingToCart.add(medicine.id);
     this.cdr.markForCheck();
 
@@ -126,21 +124,70 @@ export class ResultsComponent implements OnInit, OnDestroy {
     });
   }
 
-  bookDoctor(doctor: Doctor): void {
-    this.showToast(`${doctor.name ?? 'Дәрігер'} дәрігеріне жазылу басталды`);
-  }
-
   isAddingToCart(medicine: Medicine): boolean {
     return medicine.id ? this.addingToCart.has(medicine.id) : false;
   }
 
+  // ─── REVIEWS ──────────────────────────────────────────
+
+  toggleReviews(doctorId: number): void {
+    this.expandedDoctor = this.expandedDoctor === doctorId ? null : doctorId;
+    this.cdr.markForCheck();
+  }
+
+  setRating(doctorId: number, rating: number): void {
+    this.reviewRatings[doctorId] = rating;
+    this.cdr.markForCheck();
+  }
+
+  submitReview(doctor: Doctor): void {
+    const doctorId = doctor.id;
+    if (!doctorId || !this.reviewRatings[doctorId]) return;
+
+    this.submittingReview = doctorId;
+
+    this.apiService.addReview(doctorId, {
+      rating:  this.reviewRatings[doctorId],
+      comment: this.reviewComments[doctorId] ?? ''
+    }).subscribe({
+      next: (review) => {
+        if (!doctor.reviews) doctor.reviews = [];
+        doctor.reviews.unshift(review);
+        doctor.review_count = (doctor.review_count || 0) + 1;
+        this.userReviews[doctorId] = true;
+        this.submittingReview = null;
+        this.showToast('Пікіріңіз қосылды ✓');
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.submittingReview = null;
+        this.showToast(err?.error?.error ?? 'Қате шықты ⚠️');
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  // ─── HELPERS ──────────────────────────────────────────
+
+  goBackToSymptoms(): void { this.router.navigate(['/symptoms']); }
+  goToCart(): void { this.router.navigate(['/cart']); }
+
+  bookDoctor(doctor: Doctor): void {
+    this.showToast(`${doctor.name ?? 'Дәрігер'} дәрігеріне жазылу басталды`);
+  }
+
+  getRatingStars(rating: number): string {
+    const r = Math.round(rating || 0);
+    return '★'.repeat(r) + '☆'.repeat(5 - r);
+  }
+
+  getStars(rating: number): string {
+    return '★'.repeat(rating) + '☆'.repeat(5 - rating);
+  }
+
   getDoctorInitials(name: string): string {
-    return (name || '')
-      .split(' ')
-      .filter(Boolean)
-      .slice(0, 2)
-      .map(part => part[0].toUpperCase())
-      .join('');
+    return (name || '').split(' ').filter(Boolean).slice(0, 2)
+      .map(p => p[0].toUpperCase()).join('');
   }
 
   getDoctorStars(experienceYears: number): string {
@@ -150,12 +197,8 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
   private inferDiagnosis(symptoms: string[]): string {
     const lower = symptoms.map(s => s.toLowerCase());
-    if (lower.some(s => s.includes('аллерг') || s.includes('allerg'))) {
-      return 'Аллергия';
-    }
-    if (lower.some(s => s.includes('живот') || s.includes('іш'))) {
-      return 'Асқазан-ішек бұзылысы';
-    }
+    if (lower.some(s => s.includes('аллерг') || s.includes('allerg'))) return 'Аллергия';
+    if (lower.some(s => s.includes('живот') || s.includes('іш'))) return 'Асқазан-ішек бұзылысы';
     return 'Простуда / ОРВИ';
   }
 

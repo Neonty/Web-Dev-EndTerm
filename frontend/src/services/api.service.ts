@@ -205,4 +205,19 @@ export class ApiService {
       headers: this.getAuthHeaders()
     });
   }
+    addReview(doctorId: number, data: { rating: number; comment: string }): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/doctors/${doctorId}/reviews/`,
+      data,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+ 
+  getReviews(doctorId: number): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${this.baseUrl}/doctors/${doctorId}/reviews/`,
+      { headers: this.getAuthHeaders() }
+    );
+  }
 }
+
