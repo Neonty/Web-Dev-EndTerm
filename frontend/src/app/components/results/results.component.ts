@@ -4,6 +4,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ApiService } from '../../../services/api.service';
+import { CartService } from '../../../services/cart.service';
 import { Medicine, Doctor } from '../../../models/medicine.model';
 import { buildAnalyzeKeywords, SymptomCode } from '../../../services/symptom-keywords';
 
@@ -22,6 +23,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
   selectedSymptoms: string[] = [];
   diagnosis = '';
   toastMessage = '';
+  addingToCart: Set<number> = new Set();
 
   private symptomCodes: SymptomCode[] = [];
   private additionalText = '';
@@ -31,6 +33,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
   constructor(
     private apiService: ApiService,
+    private cartService: CartService,
     private router: Router,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
@@ -98,12 +101,37 @@ export class ResultsComponent implements OnInit, OnDestroy {
     this.router.navigate(['/symptoms']);
   }
 
+  goToCart(): void {
+    this.router.navigate(['/cart']);
+  }
+
   buyMedicine(medicine: Medicine): void {
-    this.showToast(`${medicine.name ?? 'Дәрі'} корзинаға қосылды`);
+    if (!medicine.id || this.addingToCart.has(medicine.id)) return;
+
+    this.addingToCart.add(medicine.id);
+    this.cdr.markForCheck();
+
+    this.apiService.addToCart(medicine.id, 1).subscribe({
+      next: () => {
+        this.cartService.increment();
+        this.addingToCart.delete(medicine.id!);
+        this.showToast(`${medicine.name ?? 'Дәрі'} корзинаға қосылды ✓`);
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.addingToCart.delete(medicine.id!);
+        this.showToast('Қосу мүмкін болмады ⚠️');
+        this.cdr.markForCheck();
+      }
+    });
   }
 
   bookDoctor(doctor: Doctor): void {
     this.showToast(`${doctor.name ?? 'Дәрігер'} дәрігеріне жазылу басталды`);
+  }
+
+  isAddingToCart(medicine: Medicine): boolean {
+    return medicine.id ? this.addingToCart.has(medicine.id) : false;
   }
 
   getDoctorInitials(name: string): string {
@@ -133,6 +161,6 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
   private showToast(message: string): void {
     this.toastMessage = message;
-    setTimeout(() => (this.toastMessage = ''), 1800);
+    setTimeout(() => (this.toastMessage = ''), 2000);
   }
 }

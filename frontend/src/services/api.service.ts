@@ -13,6 +13,54 @@ export interface UserProfile {
   avatar?: string;
 }
 
+export interface CartItem {
+  id: number;
+  medicine: number;
+  medicine_name: string;
+  medicine_price: number;
+  quantity: number;
+  total_price: number;
+  added_at: string;
+}
+
+export interface CartResponse {
+  items: CartItem[];
+  total: number;
+  count: number;
+}
+
+export interface OrderItem {
+  id: number;
+  medicine: number;
+  medicine_name: string;
+  quantity: number;
+  price: number;
+}
+
+export interface AppointmentInfo {
+  id: number;
+  doctor: string;
+  specialization: string;
+  date: string;
+  status: string;
+}
+
+export interface Order {
+  id: number;
+  total_amount: number;
+  status: string;
+  created_at: string;
+  items: OrderItem[];
+  appointment_info: AppointmentInfo | null;
+}
+
+export interface CheckoutPayload {
+  card_number: string;
+  card_expiry: string;
+  card_cvv: string;
+  appointment_id?: number | null;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -28,6 +76,8 @@ export class ApiService {
     });
   }
 
+  // ─── AUTH ──────────────────────────────────────────────
+
   login(username: string, password: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/login/`, { username, password });
   }
@@ -42,6 +92,52 @@ export class ApiService {
   }): Observable<any> {
     return this.http.post(`${this.baseUrl}/register/`, data);
   }
+
+  // ─── PROFILE ───────────────────────────────────────────
+
+  getMyProfile(): Observable<UserProfile> {
+    return this.http.get<UserProfile>(`${this.baseUrl}/me/`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  updateMyProfile(data: Partial<UserProfile>): Observable<UserProfile> {
+    return this.http.put<UserProfile>(`${this.baseUrl}/me/`, data, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  // ─── MEDICINES ─────────────────────────────────────────
+
+  getMedicines(): Observable<Medicine[]> {
+    return this.http.get<Medicine[]>(`${this.baseUrl}/medicines/`);
+  }
+
+  getMedicineById(id: number): Observable<Medicine> {
+    return this.http.get<Medicine>(`${this.baseUrl}/medicines/${id}/`);
+  }
+
+  // ─── DOCTORS ───────────────────────────────────────────
+
+  getDoctors(): Observable<Doctor[]> {
+    return this.http.get<Doctor[]>(`${this.baseUrl}/doctors/`);
+  }
+
+  // ─── APPOINTMENTS ──────────────────────────────────────
+
+  getMyAppointments(): Observable<Appointment[]> {
+    return this.http.get<Appointment[]>(`${this.baseUrl}/appointments/`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  createAppointment(data: Appointment): Observable<any> {
+    return this.http.post(`${this.baseUrl}/appointments/`, data, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  // ─── SYMPTOMS / AI ─────────────────────────────────────
 
   analyzeSymptoms(payload: {
     symptoms: string[];
@@ -63,38 +159,49 @@ export class ApiService {
     return this.http.post<{ advice: string }>(`${this.baseUrl}/ai/symptoms/`, payload);
   }
 
-  getMedicines(): Observable<Medicine[]> {
-    return this.http.get<Medicine[]>(`${this.baseUrl}/medicines/`);
-  }
+  // ─── CART ──────────────────────────────────────────────
 
-  getMedicineById(id: number): Observable<Medicine> {
-    return this.http.get<Medicine>(`${this.baseUrl}/medicines/${id}/`);
-  }
-
-getDoctors(): Observable<Doctor[]> {
-  return this.http.get<Doctor[]>(`${this.baseUrl}/doctors/`);
-}
-
-  getMyAppointments(): Observable<Appointment[]> {
-    return this.http.get<Appointment[]>(`${this.baseUrl}/appointments/`, {
+  getCart(): Observable<CartResponse> {
+    return this.http.get<CartResponse>(`${this.baseUrl}/cart/`, {
       headers: this.getAuthHeaders()
     });
   }
 
-  createAppointment(data: Appointment): Observable<any> {
-    return this.http.post(`${this.baseUrl}/appointments/`, data, {
+  addToCart(medicineId: number, quantity = 1): Observable<CartItem> {
+    return this.http.post<CartItem>(
+      `${this.baseUrl}/cart/add/`,
+      { medicine_id: medicineId, quantity },
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  updateCartItem(itemId: number, quantity: number): Observable<CartItem> {
+    return this.http.patch<CartItem>(
+      `${this.baseUrl}/cart/${itemId}/update/`,
+      { quantity },
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  removeFromCart(itemId: number): Observable<any> {
+    return this.http.delete(
+      `${this.baseUrl}/cart/${itemId}/remove/`,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  // ─── CHECKOUT ──────────────────────────────────────────
+
+  checkout(payload: CheckoutPayload): Observable<any> {
+    return this.http.post(`${this.baseUrl}/checkout/`, payload, {
       headers: this.getAuthHeaders()
     });
   }
 
-  getMyProfile(): Observable<UserProfile> {
-    return this.http.get<UserProfile>(`${this.baseUrl}/me/`, {
-      headers: this.getAuthHeaders()
-    });
-  }
+  // ─── ORDER HISTORY ─────────────────────────────────────
 
-  updateMyProfile(data: Partial<UserProfile>): Observable<UserProfile> {
-    return this.http.put<UserProfile>(`${this.baseUrl}/me/`, data, {
+  getOrders(): Observable<Order[]> {
+    return this.http.get<Order[]>(`${this.baseUrl}/orders/`, {
       headers: this.getAuthHeaders()
     });
   }

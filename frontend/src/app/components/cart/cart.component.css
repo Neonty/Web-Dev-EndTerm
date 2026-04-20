@@ -1,0 +1,48 @@
+.page-wrap { max-width: 700px; margin: 40px auto; padding: 0 20px; }
+h1 { font-size: 28px; font-weight: 600; margin-bottom: 24px; }
+
+.loading { display: flex; justify-content: center; padding: 60px 0; }
+.spinner { width: 36px; height: 36px; border: 3px solid #e5e7eb; border-top-color: #10b981; border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty-state { text-align: center; padding: 60px 0; color: #6b7280; }
+.empty-icon { font-size: 48px; margin-bottom: 12px; }
+.empty-title { font-size: 18px; margin-bottom: 16px; }
+
+.cart-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+
+.cart-item {
+  display: flex; align-items: center; gap: 16px;
+  background: #fff; border: 1px solid #e5e7eb;
+  border-radius: 12px; padding: 16px;
+}
+.item-info { flex: 1; }
+.item-name { font-weight: 500; font-size: 15px; }
+.item-price { font-size: 13px; color: #6b7280; margin-top: 2px; }
+
+.item-controls { display: flex; align-items: center; gap: 8px; }
+.qty-btn {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1px solid #d1d5db; background: #f9fafb;
+  font-size: 16px; cursor: pointer; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+}
+.qty-btn:hover { background: #e5e7eb; }
+.qty { font-weight: 600; min-width: 24px; text-align: center; }
+
+.item-total { font-weight: 600; color: #10b981; min-width: 80px; text-align: right; }
+
+.remove-btn {
+  background: none; border: none; color: #ef4444;
+  font-size: 16px; cursor: pointer; padding: 4px 8px;
+  border-radius: 6px;
+}
+.remove-btn:hover { background: #fee2e2; }
+
+.cart-footer { border-top: 1px solid #e5e7eb; padding-top: 20px; }
+.total-row { display: flex; justify-content: space-between; font-size: 18px; margin-bottom: 16px; }
+.total-amount { font-weight: 700; color: #10b981; font-size: 22px; }
+
+.btn { padding: 10px 20px; border-radius: 10px; border: none; background: #10b981; color: #fff; font-size: 15px; cursor: pointer; }
+.btn:hover { background: #059669; }
+.btn-checkout { width: 100%; padding: 14px; font-size: 16px; font-weight: 600; }

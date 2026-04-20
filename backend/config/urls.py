@@ -27,4 +27,5 @@ urlpatterns = [
     path('api/analyze/', analyze_symptoms, name='analyze_symptoms'),
     path('api/ai/symptoms/', ai_symptom_advice, name='ai_symptom_advice'),
     path('api/', include(router.urls)),
+    path('api/', include('apps.orders.urls')),
 ]

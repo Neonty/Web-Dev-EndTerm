@@ -1,13 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AuthService } from './services/auth.service';
 import { LanguageService } from './services/language.service';
+import { CartService } from './services/cart.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, TranslatePipe],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, TranslatePipe, CommonModule],
   template: `
     <nav class="navbar">
       <div class="nav-inner">
@@ -20,6 +22,14 @@ import { LanguageService } from './services/language.service';
           <a routerLink="/symptoms" routerLinkActive="active">{{ 'nav.symptoms' | translate }}</a>
           <a routerLink="/results" routerLinkActive="active">{{ 'nav.results' | translate }}</a>
           <a routerLink="/profile" routerLinkActive="active">{{ 'nav.profile' | translate }}</a>
+          <a routerLink="/orders" routerLinkActive="active">box</a>
+
+          <!-- Корзина badge -->
+          <a routerLink="/cart" routerLinkActive="active" class="cart-link">
+            basket
+            <span *ngIf="cartCount > 0" class="cart-badge">{{ cartCount }}</span>
+          </a>
+
           <button class="logout-btn" (click)="logout()">{{ 'nav.logout' | translate }}</button>
         }
         <select class="lang-select" [value]="currentLang" (change)="setLanguage($event)">
@@ -96,19 +106,57 @@ import { LanguageService } from './services/language.service';
       background: rgba(255,255,255,0.75);
       font-size: 13px;
     }
+    .cart-link {
+      position: relative;
+      padding: 8px 14px !important;
+    }
+    .cart-badge {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      background: #ef4444;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      min-width: 16px;
+      height: 16px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 3px;
+      line-height: 1;
+    }
   `]
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   isAuthed = false;
+  cartCount = 0;
 
-  constructor(private authService: AuthService, private languageService: LanguageService) {
+  constructor(
+    private authService: AuthService,
+    private languageService: LanguageService,
+    private cartService: CartService
+  ) {
     this.isAuthed = this.authService.isAuthenticated();
     this.authService.authChanges().subscribe((authed) => {
       this.isAuthed = authed;
       if (authed) {
         this.authService.refreshProfileFromApi();
+        this.cartService.refresh();
+      } else {
+        this.cartService.reset();
       }
     });
+  }
+
+  ngOnInit(): void {
+    this.cartService.count$.subscribe(count => {
+      this.cartCount = count;
+    });
+    if (this.isAuthed) {
+      this.cartService.refresh();
+    }
   }
 
   get currentLang(): string {

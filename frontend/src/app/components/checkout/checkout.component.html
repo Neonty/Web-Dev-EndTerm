@@ -1,0 +1,103 @@
+<div class="page-wrap">
+
+  <!-- SUCCESS -->
+  <div *ngIf="success" class="success-card">
+    <div class="success-icon">✅</div>
+    <h2>Төлем сәтті өтті!</h2>
+    <p>Тапсырыс №{{ orderId }}</p>
+    <p class="success-total">{{ total }} ₸</p>
+    <button class="btn" (click)="goOrders()">Тапсырыстарым</button>
+  </div>
+
+  <ng-container *ngIf="!success">
+    <h1>💳 Төлем</h1>
+
+    <!-- Order summary -->
+    <div class="summary-card">
+      <div *ngFor="let item of items" class="summary-row">
+        <span>{{ item.medicine_name }} × {{ item.quantity }}</span>
+        <span>{{ item.total_price }} ₸</span>
+      </div>
+      <div class="summary-total">
+        <span>Жиыны</span>
+        <span>{{ total }} ₸</span>
+      </div>
+    </div>
+
+    <!-- Payment method tabs -->
+    <div class="method-tabs">
+      <button class="method-tab" [class.active]="payMethod === 'card'" (click)="selectMethod('card')">
+        💳 Карта
+      </button>
+      <button class="method-tab" [class.active]="payMethod === 'qr'" (click)="selectMethod('qr')">
+        📱 QR код
+      </button>
+    </div>
+
+    <!-- CARD FORM -->
+    <div *ngIf="payMethod === 'card'" class="card-form">
+      <div class="card-preview">
+        <div class="card-number-display">{{ cardNumber || '•••• •••• •••• ••••' }}</div>
+        <div class="card-bottom">
+          <span>{{ cardName || 'CARD HOLDER' }}</span>
+          <span>{{ cardExpiry || 'MM/YY' }}</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Карта нөмірі</label>
+        <input type="text" placeholder="0000 0000 0000 0000"
+               [value]="cardNumber" (input)="formatCardNumber($event)" maxlength="19" />
+      </div>
+      <div class="form-group">
+        <label>Карта иесі</label>
+        <input type="text" placeholder="IVAN IVANOV"
+               [(ngModel)]="cardName" style="text-transform:uppercase" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Мерзімі</label>
+          <input type="text" placeholder="MM/YY"
+                 [value]="cardExpiry" (input)="formatExpiry($event)" maxlength="5" />
+        </div>
+        <div class="form-group">
+          <label>CVV</label>
+          <input type="password" placeholder="•••"
+                 [(ngModel)]="cardCvv" maxlength="3" />
+        </div>
+      </div>
+
+      <div *ngIf="error" class="error-msg">⚠️ {{ error }}</div>
+
+      <button class="btn btn-pay" (click)="payByCard()" [disabled]="paying">
+        <span *ngIf="!paying">💳 {{ total }} ₸ төлеу</span>
+        <span *ngIf="paying" class="processing">
+          <span class="dot-loader"></span> Өңделуде...
+        </span>
+      </button>
+    </div>
+
+    <!-- QR FORM -->
+    <div *ngIf="payMethod === 'qr'" class="qr-form">
+      <p class="qr-hint">QR кодты сканерлеп, {{ total }} ₸ төлеңіз</p>
+
+      <div class="qr-wrap">
+        <!-- ❌ Бұрын: <canvas #qrCanvas></canvas> -->
+        <!-- ✅ Жаңа: -->
+        <img src="assets/qr-payment.png" alt="QR payment" class="qr-img" />
+      </div>
+
+      <div *ngIf="error" class="error-msg">⚠️ {{ error }}</div>
+
+      <button class="btn btn-pay" (click)="confirmQrPayment()" [disabled]="qrChecking">
+        <span *ngIf="!qrChecking">✅ Төледім</span>
+        <span *ngIf="qrChecking" class="processing">
+          <span class="dot-loader"></span> Тексерілуде...
+        </span>
+      </button>
+    </div>
+
+    <button class="btn-back" (click)="goBack()">← Корзинаға оралу</button>
+  </ng-container>
+
+</div>

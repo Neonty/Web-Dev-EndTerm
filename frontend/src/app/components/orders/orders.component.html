@@ -1,0 +1,41 @@
+<div class="page-wrap">
+  <h1>📦 Тапсырыстар тарихы</h1>
+
+  <div *ngIf="loading" class="loading"><div class="spinner"></div></div>
+
+  <div *ngIf="!loading && error" class="empty-state">⚠️ {{ error }}</div>
+
+  <div *ngIf="!loading && orders.length === 0" class="empty-state">
+    <div class="empty-icon">📦</div>
+    <div>Тапсырыстар жоқ</div>
+  </div>
+
+  <div *ngFor="let order of orders" class="order-card">
+    <div class="order-header">
+      <span class="order-id">Тапсырыс №{{ order.id }}</span>
+      <span class="badge" [class.badge-paid]="order.status === 'paid'"
+            [class.badge-pending]="order.status === 'pending'">
+        {{ order.status === 'paid' ? '✅ Төленді' : '⏳ Күтуде' }}
+      </span>
+      <span class="order-date">{{ order.created_at | date: 'dd.MM.yyyy HH:mm' }}</span>
+    </div>
+
+    <div class="order-items">
+      <div *ngFor="let item of order.items" class="order-item">
+        💊 {{ item.medicine_name }} × {{ item.quantity }}
+        <span class="item-price">{{ item.price }} ₸</span>
+      </div>
+    </div>
+
+    <div *ngIf="order.appointment_info" class="appointment-row">
+      🩺 {{ order.appointment_info.doctor }} —
+      {{ order.appointment_info.specialization }} —
+      {{ order.appointment_info.date }}
+      <span class="appt-price">5 000 ₸</span>
+    </div>
+
+    <div class="order-total">Жиыны: <strong>{{ order.total_amount }} ₸</strong></div>
+  </div>
+
+  <button class="btn-back" (click)="goBack()">← Артқа</button>
+</div>

@@ -1,0 +1,48 @@
+<div class="page-wrap">
+  <h1>🛒 Корзина</h1>
+
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+  </div>
+
+  <div *ngIf="!loading && error" class="empty-state">
+    <div>⚠️ {{ error }}</div>
+    <button class="btn" (click)="goBack()">Артқа</button>
+  </div>
+
+  <ng-container *ngIf="!loading && !error">
+    <div *ngIf="items.length === 0" class="empty-state">
+      <div class="empty-icon">🛒</div>
+      <div class="empty-title">Корзина бос</div>
+      <button class="btn" (click)="goBack()">Дәрілерге оралу</button>
+    </div>
+
+    <div *ngIf="items.length > 0">
+      <div class="cart-list">
+        <div *ngFor="let item of items" class="cart-item">
+          <div class="item-info">
+            <div class="item-name">💊 {{ item.medicine_name }}</div>
+            <div class="item-price">{{ item.medicine_price }} ₸ / дана</div>
+          </div>
+          <div class="item-controls">
+            <button class="qty-btn" (click)="updateQuantity(item, item.quantity - 1)">−</button>
+            <span class="qty">{{ item.quantity }}</span>
+            <button class="qty-btn" (click)="updateQuantity(item, item.quantity + 1)">+</button>
+          </div>
+          <div class="item-total">{{ item.total_price }} ₸</div>
+          <button class="remove-btn" (click)="remove(item)">✕</button>
+        </div>
+      </div>
+
+      <div class="cart-footer">
+        <div class="total-row">
+          <span>Жиыны:</span>
+          <span class="total-amount">{{ total }} ₸</span>
+        </div>
+        <button class="btn btn-checkout" (click)="goCheckout()">
+          💳 Төлемге өту
+        </button>
+      </div>
+    </div>
+  </ng-container>
+</div>
