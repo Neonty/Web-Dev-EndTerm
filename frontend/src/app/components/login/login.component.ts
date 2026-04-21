@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -23,7 +23,8 @@ export class LoginComponent {
   constructor(
     private apiService: ApiService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   onLogin() {
@@ -45,6 +46,7 @@ export class LoginComponent {
       error: () => {
         this.errorMessage = 'Неверный логин или пароль';
         this.isLoading = false;
+        this.cdr.detectChanges();
       }
     });
   }

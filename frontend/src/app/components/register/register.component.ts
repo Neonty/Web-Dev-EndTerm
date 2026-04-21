@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
@@ -24,7 +24,7 @@ export class RegisterComponent {
   successMessage = '';
   isLoading = false;
 
-  constructor(private apiService: ApiService, private router: Router) {}
+  constructor(private apiService: ApiService, private router: Router, private cdr: ChangeDetectorRef) {}
 
   onRegister(): void {
     if (!this.username || !this.password || !this.confirmPassword) {
@@ -52,6 +52,7 @@ export class RegisterComponent {
       next: () => {
         this.successMessage = 'Тіркелу сәтті аяқталды. Енді жүйеге кіріңіз.';
         this.isLoading = false;
+        this.cdr.detectChanges();
         setTimeout(() => this.router.navigate(['/login']), 900);
       },
       error: (err) => {
@@ -68,6 +69,8 @@ export class RegisterComponent {
           this.errorMessage = 'Тіркелу кезінде қате пайда болды';
         }
         this.isLoading = false;
+
+        this.cdr.detectChanges();
       }
     });
   }
