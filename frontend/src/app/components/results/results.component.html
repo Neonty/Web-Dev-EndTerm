@@ -32,20 +32,21 @@
         <div class="med-icon">💊</div>
         <div class="med-name">{{ medicine.name }}</div>
         <div class="med-desc">{{ medicine.description }}</div>
+        
+        <div class="price" [style.color]="medicine.stock < 5 ? 'red' : '1D9E75'">
+          {{ 'results.stock' | translate }}: {{ medicine.stock }}
+        </div>
+
         <div class="price">{{ medicine.price }} ₸</div>
-        <span
-          class="badge"
-          [class.badge-green]="medicine.inStock !== false"
-          [class.badge-gray]="medicine.inStock === false"
-        >
-          {{ medicine.inStock === false ? ('results.outOfStock' | translate) : ('results.inStock' | translate) }}
-        </span>
+
         <button
           class="btn"
-          [disabled]="medicine.inStock === false || isAddingToCart(medicine)"
+          [disabled]="medicine.stock <= 0 || isAddingToCart(medicine)"
           (click)="buyMedicine(medicine)"
         >
-          <span *ngIf="!isAddingToCart(medicine)">{{ 'results.buy' | translate }}</span>
+          <span *ngIf="!isAddingToCart(medicine)">
+            {{ medicine.stock <= 0 ? ('results.outOfStock' | translate) : ('results.buy' | translate) }}
+          </span>
           <span *ngIf="isAddingToCart(medicine)">...</span>
         </button>
       </div>

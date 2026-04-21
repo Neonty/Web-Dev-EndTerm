@@ -36,12 +36,17 @@ def cart_add(request):
     except Medicine.DoesNotExist:
         return Response({'error': 'Дәрі табылмады'}, status=status.HTTP_404_NOT_FOUND)
 
+    if medicine.stock < quantity:
+        return Response({'error': 'Қоймада мұнша дәрі жоқ'}, status=status.HTTP_400_BAD_REQUEST)
+
     cart_item, created = Cart.objects.get_or_create(
         user=request.user,
         medicine=medicine,
         defaults={'quantity': quantity}
     )
     if not created:
+        if medicine.stock < (cart_item.quantity + quantity):
+            return Response({'error': 'Қоймадағы шектен астыңыз'}, status=status.HTTP_400_BAD_REQUEST)
         cart_item.quantity += quantity
         cart_item.save()
 
@@ -94,7 +99,7 @@ def checkout(request):
     # --- Карта валидациясы (fake) ---
     card_number = str(request.data.get('card_number', '')).replace(' ', '')
     card_expiry = str(request.data.get('card_expiry', ''))
-    card_cvv    = str(request.data.get('card_cvv', ''))
+    card_cvv = str(request.data.get('card_cvv', ''))
 
     if not card_number or not card_expiry or not card_cvv:
         return Response({'error': 'Карта деректерін толтырыңыз'}, status=status.HTTP_400_BAD_REQUEST)
@@ -106,6 +111,12 @@ def checkout(request):
     cart_items = Cart.objects.filter(user=request.user).select_related('medicine')
     appointment = None
     appointment_id = request.data.get('appointment_id')
+
+    for item in cart_items:
+        if item.medicine.stock < item.quantity:
+            return Response({
+                'error': f'Кешіріңіз, {item.medicine.name} таусылып қалды'
+            }, status=status.HTTP_400_BAD_REQUEST)
 
     if not cart_items.exists() and not appointment_id:
         return Response({'error': 'Корзина бос және дәрігер жазылуы жоқ'}, status=status.HTTP_400_BAD_REQUEST)
@@ -138,6 +149,8 @@ def checkout(request):
             quantity=item.quantity,
             price=item.medicine.price
         )
+        item.medicine.stock -= item.quantity
+        item.medicine.save()
 
     # Appointment статусын approved-ке ауыстыру
     if appointment:

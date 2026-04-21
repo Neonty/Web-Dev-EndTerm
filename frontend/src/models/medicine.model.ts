@@ -4,6 +4,7 @@ export interface Medicine {
   description?: string;
   price: number;
   inStock?: boolean;
+  stock: number;
   symptoms?: number[];
 }
 
