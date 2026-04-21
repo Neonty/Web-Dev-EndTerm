@@ -24,6 +24,7 @@ export interface Doctor {
   average_rating?: number;
   review_count?: number;
   reviews?: Review[];
+  address?: string;
 }
 
 export interface Appointment {

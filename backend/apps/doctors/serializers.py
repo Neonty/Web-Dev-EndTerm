@@ -13,10 +13,10 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 class DoctorSerializer(serializers.ModelSerializer):
     average_rating = serializers.FloatField(read_only=True)
-    review_count   = serializers.IntegerField(read_only=True)
-    reviews        = ReviewSerializer(many=True, read_only=True)
+    review_count = serializers.IntegerField(read_only=True)
+    reviews = ReviewSerializer(many=True, read_only=True)
 
     class Meta:
         model = Doctor
         fields = ['id', 'name', 'specialization', 'experience_years',
-                  'average_rating', 'review_count', 'reviews']
+                  'average_rating', 'review_count', 'reviews','address']

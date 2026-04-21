@@ -150,6 +150,12 @@ h1 {
 .doc-exp {
   font-size: 13px;
   color: var(--muted);
+  margin-bottom: 2px;
+}
+
+.doc-address{
+  font-size: 13px;
+  color: var(--muted);
   margin-bottom: 8px;
 }
 

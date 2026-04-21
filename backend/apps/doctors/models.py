@@ -8,6 +8,7 @@ class Doctor(models.Model):
     specialization = models.CharField(max_length=100)
     experience_years = models.IntegerField()
     symptoms = models.ManyToManyField('symptoms.Symptom', related_name='doctors')
+    address = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return f"{self.name} - {self.specialization}"
