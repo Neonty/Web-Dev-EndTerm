@@ -38,6 +38,16 @@
     </div>
 
     <div class="form-group">
+      <label>{{ 'profile.diagnosis' | translate }}</label>
+      <input 
+        type="text" 
+        [ngModel]="profile.diagnosis" 
+        readonly 
+        class="readonly-input" 
+      />
+    </div>
+
+    <div class="form-group">
       <label>{{ 'profile.about' | translate }}</label>
       <textarea rows="4" [(ngModel)]="profile.about"></textarea>
     </div>

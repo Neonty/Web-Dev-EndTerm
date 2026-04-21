@@ -7,6 +7,7 @@ class UserProfile(models.Model):
     phone = models.CharField(max_length=30, blank=True, default='')
     about = models.TextField(blank=True, default='')
     avatar = models.TextField(blank=True, default='')
+    diagnosis = models.TextField(blank=True, null=True, default="")
 
     def __str__(self):
         return f"Profile: {self.user.username}"

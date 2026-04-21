@@ -11,6 +11,7 @@ export interface UserProfile {
   phone?: string;
   about?: string;
   avatar?: string;
+  diagnosis?: string;
 }
 
 export interface CartItem {

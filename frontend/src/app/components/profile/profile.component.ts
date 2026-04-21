@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -20,7 +20,8 @@ export class ProfileComponent implements OnInit {
     last_name: '',
     phone: '',
     about: '',
-    avatar: ''
+    avatar: '',
+    diagnosis: ''
   };
 
   isLoading = false;
@@ -28,7 +29,7 @@ export class ProfileComponent implements OnInit {
   message = '';
   error = '';
 
-  constructor(private apiService: ApiService, private authService: AuthService) {}
+  constructor(private apiService: ApiService, private authService: AuthService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.loadProfile();
@@ -46,10 +47,12 @@ export class ProfileComponent implements OnInit {
         this.profile = { ...this.profile, ...data };
         this.authService.saveLocalProfile(this.profile);
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.error = 'Профиль деректерін жүктеу мүмкін болмады';
         this.isLoading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -64,10 +67,12 @@ export class ProfileComponent implements OnInit {
         this.authService.saveLocalProfile(this.profile);
         this.message = 'Сақталды';
         this.isSaving = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.error = 'Сақтау кезінде қате пайда болды';
         this.isSaving = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -82,6 +87,7 @@ export class ProfileComponent implements OnInit {
     const reader = new FileReader();
     reader.onload = () => {
       this.profile.avatar = String(reader.result || '');
+      this.cdr.detectChanges();
     };
     reader.readAsDataURL(file);
   }

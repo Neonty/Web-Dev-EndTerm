@@ -35,7 +35,8 @@
     "title": "My profile",
     "phone": "Phone",
     "about": "About me",
-    "save": "Save"
+    "save": "Save",
+    "diagnosis": "Diagnosis"
   },
   "symptoms": {
     "title": "Describe symptoms",
@@ -64,6 +65,7 @@
     "noDoctors": "No doctors found",
     "experience": "Experience",
     "years": "years",
-    "book": "Book"
+    "book": "Book",
+    "address": "Address"
   }
 }
