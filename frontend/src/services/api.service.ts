@@ -213,10 +213,31 @@ export class ApiService {
       { headers: this.getAuthHeaders() }
     );
   }
- 
+
   getReviews(doctorId: number): Observable<any[]> {
     return this.http.get<any[]>(
       `${this.baseUrl}/doctors/${doctorId}/reviews/`,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+  // ─── SCHEDULE ──────────────────────────────────────────
+
+  getDoctorAvailableDates(doctorId: number): Observable<{ available_dates: string[] }> {
+    return this.http.get<{ available_dates: string[] }>(
+      `${this.baseUrl}/doctors/${doctorId}/available-dates/`
+    );
+  }
+
+  getDoctorSchedule(doctorId: number, date: string): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${this.baseUrl}/doctors/${doctorId}/schedule/?date=${date}`
+    );
+  }
+
+  bookAppointment(data: { doctor: number; schedule: number; date: string; notes?: string }): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/appointments/`,
+      data,
       { headers: this.getAuthHeaders() }
     );
   }

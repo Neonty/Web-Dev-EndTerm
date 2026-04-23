@@ -1,0 +1,17 @@
+{
+  "info": {
+    "name": "SmartMed API",
+    "_postman_id": "smartmed-kbtu-placeholder",
+    "description": "Placeholder collection. Import and add requests from README API Summary.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    { "name": "Auth", "item": [] },
+    { "name": "Doctors", "item": [] },
+    { "name": "Medicines", "item": [] },
+    { "name": "Symptoms", "item": [] },
+    { "name": "Cart", "item": [] },
+    { "name": "Orders", "item": [] },
+    { "name": "Appointments", "item": [] }
+  ]
+}

@@ -4,7 +4,7 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from apps.medicines.views import MedicineViewSet
-from apps.appointments.views import AppointmentViewSet
+from apps.appointments.views import AppointmentViewSet, doctor_schedule, doctor_available_dates, create_schedule_slots
 from apps.doctors.views import DoctorViewSet
 from apps.symptoms.views import analyze_symptoms
 from apps.ai.views import ai_symptom_advice
@@ -26,6 +26,12 @@ urlpatterns = [
 
     path('api/analyze/', analyze_symptoms, name='analyze_symptoms'),
     path('api/ai/symptoms/', ai_symptom_advice, name='ai_symptom_advice'),
+
+    # Schedule endpoints
+    path('api/doctors/<int:doctor_id>/schedule/', doctor_schedule, name='doctor-schedule'),
+    path('api/doctors/<int:doctor_id>/available-dates/', doctor_available_dates, name='doctor-available-dates'),
+    path('api/doctors/<int:doctor_id>/create-slots/', create_schedule_slots, name='create-slots'),
+
     path('api/', include(router.urls)),
     path('api/', include('apps.orders.urls')),
 ]
